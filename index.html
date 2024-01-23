@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripción a Clases</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        select, input, button {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .estudiantes-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Inscripción a Clases</h2>
+        <p>Selecciona tu clase e ingresa tu código:</p>
+
+        <label for="clase">Selecciona tu clase:</label>
+        <select id="clase">
+            <option value="clase1">Clase 1</option>
+            <option value="clase2">Clase 2</option>
+            <option value="clase3">Clase 3</option>
+            <option value="clase4">Clase 4</option>
+        </select>
+
+        <br>
+
+        <label for="codigo">Ingresa tu código:</label>
+        <input type="text" id="codigo">
+
+        <br>
+
+        <button onclick="registrar()">Registrarse</button>
+        <p id="mensaje"></p>
+
+        <h3>Estudiantes Registrados</h3>
+        <button onclick="verEstudiantes()">Ver Estudiantes por Clase</button>
+        <div class="estudiantes-container" id="estudiantesContainer">
+            <ul id="listaEstudiantes"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Función para registrar a los estudiantes
+        function registrar() {
+            var claseSeleccionada = document.getElementById("clase").value;
+            var codigoIngresado = document.getElementById("codigo").value;
+
+            // Lógica para verificar el cupo máximo
+            var cupoMaximo = 17;
+            var estudiantesRegistrados = obtenerEstudiantesRegistrados(claseSeleccionada);
+
+            if (estudiantesRegistrados.length >= cupoMaximo) {
+                document.getElementById("mensaje").innerHTML = "Lo siento, la clase ya está llena.";
+            } else {
+                // Registra al estudiante
+                registrarEstudiante(claseSeleccionada, codigoIngresado);
+
+                // Actualiza la lista de estudiantes
+                actualizarListaEstudiantes();
+
+                // Muestra mensaje de registro exitoso
+                document.getElementById("mensaje").innerHTML = "Registrado exitosamente en " + claseSeleccionada;
+            }
+        }
+
+        // Función para obtener estudiantes registrados
+        function obtenerEstudiantesRegistrados(clase) {
+            var estudiantes = JSON.parse(localStorage.getItem(clase)) || [];
+            return estudiantes;
+        }
+
+        // Función para registrar un estudiante
+        function registrarEstudiante(clase, codigo) {
+            var estudiantes = obtenerEstudiantesRegistrados(clase);
+            estudiantes.push(codigo);
+            localStorage.setItem(clase, JSON.stringify(estudiantes));
+        }
+
+        // Función para actualizar la lista de estudiantes en la interfaz
+        function actualizarListaEstudiantes() {
+            var claseSeleccionada = document.getElementById("clase").value;
+            var estudiantesRegistrados = obtenerEstudiantesRegistrados(claseSeleccionada);
+            var listaEstudiantes = document.getElementById("listaEstudiantes");
+            listaEstudiantes.innerHTML = "";
+
+            estudiantesRegistrados.forEach(function(codigo) {
+                var listItem = document.createElement("li");
+                listItem.textContent = codigo;
+                listaEstudiantes.appendChild(listItem);
+            });
+        }
+
+        // Función para mostrar la lista de estudiantes de forma detallada
+        function verEstudiantes() {
+            var estudiantesContainer = document.getElementById("estudiantesContainer");
+            estudiantesContainer.style.display = "block";
+            actualizarListaEstudiantes();
+        }
+    </script>
+</body>
+</html>
